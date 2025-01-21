@@ -24,7 +24,7 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMapTest implements RewriteTes
 
             public class TestClass {
                 void test() {
-                    Map<String, Boolean> map = Map.of("POLARIS_ROUTER_KEY", false);
+                    Map<String, Boolean> map = Map.of("POLARIS_ROUTER_KEY", false, "PERCENTAGE_BASED_ROUTER_KEY", true);
                 }
             }
             """,
