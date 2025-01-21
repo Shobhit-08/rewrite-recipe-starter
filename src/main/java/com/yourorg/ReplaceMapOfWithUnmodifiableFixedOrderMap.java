@@ -39,7 +39,7 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                     @Override
                     public J visitMethodInvocation(J.MethodInvocation method, ExecutionContext ctx) {
                         J.MethodInvocation m = (J.MethodInvocation) super.visitMethodInvocation(method, ctx);
-                        if(MATCHER.matches(method)) {
+                        if (MATCHER.matches(method)) {
                             maybeRemoveImport("java.util.Map");
                             maybeAddImport("com.phonepe.payments.paymentservice.util.UnmodifiableFixedOrderMap");
 
@@ -49,9 +49,9 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                             stringBuilder.append("UnmodifiableFixedOrderMap.<String, Boolean>builder()\n");
                             List<Expression> args = m.getArguments();
 
-                            for(int i =0 ;i<args.size();i+=2) {
+                            for (int i = 0; i < args.size(); i += 2) {
                                 argumentsToPut.add(args.get(i));
-                                argumentsToPut.add(args.get(i+1));
+                                argumentsToPut.add(args.get(i + 1));
                                 stringBuilder.append(".put(");
                                 stringBuilder.append("#{}");
                                 stringBuilder.append(",");
@@ -60,12 +60,12 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                             }
                             stringBuilder.append(".build()");
                             return JavaTemplate.builder(stringBuilder.toString())
-                                            .contextSensitive()
-                                                    .imports("com.phonepe.payments.paymentservice.util.UnmodifiableFixedOrderMap")
-                                                            .build()
-                                                                    .apply(updateCursor(m),
-                                                                            m.getCoordinates().replace(),
-                                                                            argumentsToPut.toArray());
+                                    .contextSensitive()
+                                    .imports("com.phonepe.payments.paymentservice.util.UnmodifiableFixedOrderMap")
+                                    .build()
+                                    .apply(updateCursor(m),
+                                            m.getCoordinates().replace(),
+                                            argumentsToPut.toArray());
                         }
                         return m;
 

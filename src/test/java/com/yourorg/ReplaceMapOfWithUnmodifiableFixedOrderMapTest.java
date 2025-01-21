@@ -29,13 +29,15 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMapTest implements RewriteTes
             }
             """,
             """
+            import java.util.Map;
             import static com.example.Constants.*;
-            import com.example.UnmodifiableFixedOrderMap;
+            import com.yourorg.UnmodifiableFixedOrderMap;
 
             public class TestClass {
                 void test() {
                     Map<String, Boolean> map = UnmodifiableFixedOrderMap.<String, Boolean>builder()
                         .put("POLARIS_ROUTER_KEY", false)
+                        .put("PERCENTAGE_BASED_ROUTER_KEY", true)
                         .build();
                 }
             }
