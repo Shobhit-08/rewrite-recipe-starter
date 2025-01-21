@@ -1,5 +1,6 @@
 package com.yourorg;
 
+import lombok.val;
 import org.openrewrite.ExecutionContext;
 import org.openrewrite.NlsRewrite;
 import org.openrewrite.Preconditions;
@@ -11,6 +12,7 @@ import org.openrewrite.java.MethodMatcher;
 import org.openrewrite.java.search.UsesMethod;
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +48,21 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                             List<Expression> argumentsToPut = new ArrayList<>();
 
                             StringBuilder stringBuilder = new StringBuilder();
-                            stringBuilder.append("UnmodifiableFixedOrderMap.<String, Boolean>builder()\n");
+
+                            stringBuilder.append("UnmodifiableFixedOrderMap.<");
                             List<Expression> args = m.getArguments();
 
-                            for (int i = 0; i < args.size(); i += 2) {
+                            String keyType = "String";
+                            String valueType = "String";
+
+                            for (int i = 0; i < args.size() && !args.get(0).getClass().getSimpleName().equals("Empty") && i < 2; i += 2) {
+                                keyType = getType(args.get(i));
+                                valueType = getType(args.get(i + 1));
+                            }
+
+                            stringBuilder.append(keyType + ", " + valueType + ">builder()\n");
+
+                            for (int i = 0; i < args.size() && !args.get(0).getClass().getSimpleName().equals("Empty"); i += 2) {
                                 argumentsToPut.add(args.get(i));
                                 argumentsToPut.add(args.get(i + 1));
                                 stringBuilder.append(".put(");
@@ -71,5 +84,17 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
 
                     }
                 });
+    }
+
+    private String getType(final Expression expression) {
+        String result;
+        if (expression.getType() instanceof JavaType.Primitive) {
+            JavaType.Primitive primitive = (JavaType.Primitive) expression.getType();
+            result = primitive.getClassName();
+        } else {
+            result = expression.getType() == null ? "String" : expression.getType().toString();
+        }
+        String[] resultArray = result.split("\\.");
+        return resultArray[resultArray.length-1];
     }
 }

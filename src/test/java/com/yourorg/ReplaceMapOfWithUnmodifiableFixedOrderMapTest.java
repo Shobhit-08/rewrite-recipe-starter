@@ -3,6 +3,7 @@ package com.yourorg;
 import org.junit.jupiter.api.Test;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
+import org.openrewrite.test.TypeValidation;
 
 import static org.openrewrite.java.Assertions.java;
 
@@ -10,7 +11,77 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMapTest implements RewriteTes
 
     @Override
     public void defaults(RecipeSpec spec) {
-        spec.recipe(new ReplaceMapOfWithUnmodifiableFixedOrderMap());
+        spec.recipe(new ReplaceMapOfWithUnmodifiableFixedOrderMap())
+          .typeValidationOptions(TypeValidation.builder().classDeclarations(false).build());
+    }
+
+    @Test
+    void replaceMapOfForEmptyMap() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+            import java.util.Map;
+            import static com.example.Constants.*;
+
+            public class TestClass {            
+    
+                void test() {
+                    Map<String, Boolean> map = Map.of();
+                }
+            }
+            """,
+            """
+            import java.util.Map;
+            import static com.example.Constants.*;
+            import com.yourorg.UnmodifiableFixedOrderMap;
+
+            public class TestClass {
+                
+                void test() {
+                    Map<String, Boolean> map = UnmodifiableFixedOrderMap.<String, Boolean>builder()
+                        .build();
+                }
+            }
+            """
+          )
+        );
+    }
+
+    @Test
+    void replaceMapOfForEnums() {
+        rewriteRun(
+          //language=java
+          java(
+            """
+            import com.google.protobuf.JavaType;import java.util.Map;
+            import static com.example.Constants.*;
+
+            public class TestClass {  
+    
+                void test() {
+                    Map<String, Boolean> map = Map.of(JavaType.BOOLEAN, false, JavaType.DOUBLE, true);
+                }
+            }
+            """,
+            """
+            import com.google.protobuf.JavaType;
+            import java.util.Map;
+            import static com.example.Constants.*;
+            import com.yourorg.UnmodifiableFixedOrderMap;
+
+            public class TestClass { 
+    
+                void test() {
+                    Map<String, Boolean> map = UnmodifiableFixedOrderMap.<JavaType, Boolean>builder()
+                    .put(JavaType.BOOLEAN, false)
+                    .put(JavaType.DOUBLE, true)
+                        .build();
+                }
+            }
+            """
+          )
+        );
     }
 
     @Test
