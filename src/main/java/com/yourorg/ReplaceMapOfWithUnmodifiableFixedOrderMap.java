@@ -14,7 +14,6 @@ import org.openrewrite.java.tree.J;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringJoiner;
 
 public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
 
@@ -45,8 +44,6 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                             maybeAddImport("com.phonepe.payments.paymentservice.util.UnmodifiableFixedOrderMap");
 
                             List<Expression> argumentsToPut = new ArrayList<>();
-//                            maybeAddImport("java.util.Collections");
-//                            StringJoiner singletonMap = new StringJoiner(", ", "Collections.singletonMap(",")" );
 
                             StringBuilder stringBuilder = new StringBuilder();
                             stringBuilder.append("UnmodifiableFixedOrderMap.<String, Boolean>builder()\n");
@@ -69,44 +66,8 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                                                                     .apply(updateCursor(m),
                                                                             m.getCoordinates().replace(),
                                                                             argumentsToPut.toArray());
-//
-////                            args.forEach(o -> singletonMap.add("#{any()}"));
-//                            return JavaTemplate.builder(singletonMap.toString())
-//                                    .contextSensitive()
-//                                    .imports("java.util.Collections")
-//                                    .build()
-//                                    .apply(
-//                                            updateCursor(m),
-//                                            m.getCoordinates().replace(),
-//                                            m.getArguments().toArray());
                         }
                         return m;
-                        // Ensure arguments are in key-value pairs
-//                        List<Expression> arguments = method.getArguments();
-//                        if (arguments.size() % 2 != 0) {
-//                            return method; // Not key-value pairs, skip
-//                        }
-
-                        // Add required imports
-//                        maybeAddImport("com.phonepe.payments.paymentservice.util.UnmodifiableFixedOrderMap");
-//                        maybeRemoveImport("java.util.Map");
-
-                        // Build the replacement template
-//                        StringBuilder builderTemplate = new StringBuilder("UnmodifiableFixedOrderMap.<String, Boolean>builder()");
-//                        for (int i = 0; i < arguments.size(); i += 2) {
-//                            builderTemplate.append(".put(\"").append(arguments.get(i)).append("\", ").append(arguments.get(i+1)).append(")");
-//                        }
-//                        builderTemplate.append(".build()");
-//
-//                        JavaTemplate template = JavaTemplate.builder(builderTemplate.toString())
-//                                .contextSensitive()
-//                                .imports("com.phonepe.payments.paymentservice.util.UnmodifiableFixedOrderMap")
-//                                .build()
-//                                .apply(updateCursor(m),
-//                                        m.getCoordinates().replace(),
-//                                        m.getArguments().toArray());
-//
-//                        return template.apply(getCursor(), method.getCoordinates().replace());
 
                     }
                 });
