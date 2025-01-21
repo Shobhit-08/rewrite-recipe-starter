@@ -53,9 +53,9 @@ public class ReplaceMapOfWithUnmodifiableFixedOrderMap extends Recipe {
                                 argumentsToPut.add(args.get(i));
                                 argumentsToPut.add(args.get(i + 1));
                                 stringBuilder.append(".put(");
-                                stringBuilder.append("#{}");
+                                stringBuilder.append("#{any()}");
                                 stringBuilder.append(",");
-                                stringBuilder.append("#{}");
+                                stringBuilder.append("#{any()}");
                                 stringBuilder.append(")\n");
                             }
                             stringBuilder.append(".build()");
